@@ -1,15 +1,14 @@
-const mongoose = require('mongoose');
+// backend/models/Prediction.js
+/*const mongoose = require('mongoose');
 
 const PredictionSchema = new mongoose.Schema({
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  race: { type: String, required: true },
+  race: { type: String, required: true }, // Nombre de la carrera (ej: "Monaco GP")
   predictions: {
-    pole: { type: String, required: true },
-    first: { type: String, required: true },
-    second: { type: String, required: true },
-    third: { type: String, required: true }
+    first: { type: String, required: true }, // Predicción para el primer lugar
+    second: { type: String, required: true }, // Predicción para el segundo lugar
+    third: { type: String, required: true }, // Predicción para el tercer lugar
   },
-  points: { type: Number, default: 0 }
+  points: { type: Number, default: 0 }, // Puntos obtenidos por esta predicción
 });
 
-module.exports = mongoose.model('Prediction', PredictionSchema);
+module.exports = mongoose.model('Prediction', PredictionSchema);*/

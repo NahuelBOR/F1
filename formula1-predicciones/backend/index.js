@@ -6,6 +6,8 @@ require('dotenv').config();
 
 const authRoutes = require('./routes/authRoutes'); // Importar rutas de autenticación
 const profileRoutes = require('./routes/profileRoutes'); // Importar las rutas de perfil
+const predictionRoutes = require('./routes/predictionRoutes');
+const raceResultRoutes = require('./routes/raceResultRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -22,6 +24,8 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
 // Rutas
 app.use('/api/auth', authRoutes); // Usar rutas de autenticación
 app.use('/api/profile', profileRoutes); // Montar las rutas de perfil
+app.use('/api/predictions', predictionRoutes);
+app.use('/api/race-results', raceResultRoutes);
 
 // Ruta de prueba
 app.get('/', (req, res) => {

@@ -3,6 +3,58 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // Importar useNavigate para redirigir
 
+// src/components/Profile.js
+const races = [
+  "Gran Premio de Australia",
+  "Gran Premio de China",
+  "Gran Premio de Japan",
+  "Gran Premio de Bahrain",
+  "Gran Premio de Saudi Arabia",
+  "Gran Premio de Miami",
+  "Gran Premio de Emilia-Romagna",
+  "Gran Premio de Monaco",
+  "Gran Premio de España",
+  "Gran Premio de Canada",
+  "Gran Premio de Austria",
+  "Gran Premio de Gran Bretaña",
+  "Gran Premio de Bélgica",
+  "Gran Premio de Hungría",
+  "Gran Premio de Países Bajos",
+  "Gran Premio de Italia",
+  "Gran Premio de Azerbaijan",
+  "Gran Premio de Singapur",
+  "Gran Premio de Estados Unidos",
+  "Gran Premio de la Ciudad de México",
+  "Gran Premio de São Paulo",
+  "Gran Premio de Las Vegas",
+  "Gran Premio de Qatar",
+  "Gran Premio de Abu Dhabi"
+];
+
+const drivers = [
+  "Lewis Hamilton",
+  "Max Verstappen",
+  "Charles Leclerc",
+  "Oscar Piastri",
+  "Carlos Sainz",
+  "Lando Norris",
+  "George Russell",
+  "Fernando Alonso",
+  "Esteban Ocon",
+  "Pierre Gasly",
+  "Kimi Antonelli",
+  "Yuki Tsunoda",
+  "Oliver Bearman",
+  "Lance Stroll",
+  "Isack Hadjar",
+  "Liam Lawson",
+  "Alexander Albon",
+  "Gabriel Bortoleto",
+  "Nico Hulkenberg",
+  "Jack Doohan",
+  "Franco Colapinto"
+];
+
 const Profile = () => {
   const [profileImage, setProfileImage] = useState('');
   const [displayName, setDisplayName] = useState('');
@@ -10,7 +62,13 @@ const Profile = () => {
   const [newDisplayName, setNewDisplayName] = useState('');
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
-  
+  const [race, setRace] = useState('');
+  const [first, setFirst] = useState('');
+  const [second, setSecond] = useState('');
+  const [third, setThird] = useState('');
+  const [totalPoints, setTotalPoints] = useState(0);
+  const [role, setRole] = useState(null);
+
 
   // Obtener los datos del perfil al cargar el componente
   useEffect(() => {
@@ -23,9 +81,11 @@ const Profile = () => {
           },
         });
 
-        const { profileImage, displayName } = response.data;
+        const { profileImage, displayName, totalPoints, role } = response.data;
         setProfileImage(profileImage || ''); // Si no hay imagen, se deja vacío
-        setDisplayName(displayName || ''); // Si no hay nombre, se deja vacío
+        setDisplayName(displayName || '');
+        setTotalPoints(totalPoints || 0);
+        setRole(role);
       } catch (error) {
         console.error('Error al obtener el perfil:', error.response?.data || error.message);
         setMessage('Error al obtener el perfil');
@@ -34,6 +94,34 @@ const Profile = () => {
 
     fetchProfile();
   }, []);
+
+  const handlePredictionSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.post(
+        'http://localhost:5000/api/predictions/save',
+        {
+          race,
+          predictions: { first, second, third },
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log();
+
+      window.location.reload();
+      console.log('Predicción guardada:', response.data);
+      alert('Predicción guardada exitosamente');
+    } catch (error) {
+      console.error('Error al guardar la predicción:', error.response?.data || error.message);
+      alert('Error al guardar la predicción');
+    }
+  };
 
   const handleLogout = () => {
     localStorage.removeItem('token'); // Eliminar el token
@@ -75,6 +163,7 @@ const Profile = () => {
     }
   };
 
+
   return (
     <div>
       <h2>Perfil</h2>
@@ -97,6 +186,10 @@ const Profile = () => {
         </div>
       )}
 
+      <div>
+        <h3>Puntos totales: {totalPoints}</h3>
+      </div>
+
       {/* Formulario para actualizar el perfil */}
       <form onSubmit={handleSubmit}>
         <div>
@@ -118,12 +211,72 @@ const Profile = () => {
       {/* Mostrar mensajes de éxito o error */}
       {message && <p>{message}</p>}
 
+      <div>
+        {/* Formulario para guardar predicciones */}
+        <form onSubmit={handlePredictionSubmit}>
+          <h3>Guardar Predicción</h3>
+          <div>
+            <label>Carrera:</label>
+            <select value={race} onChange={(e) => setRace(e.target.value)} required>
+              <option value="">Selecciona una carrera</option>
+              {races.map((raceName, index) => (
+                <option key={index} value={raceName}>
+                  {raceName}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label>Primer Lugar:</label>
+            <select value={first} onChange={(e) => setFirst(e.target.value)} required>
+              <option value="">Selecciona un corredor</option>
+              {drivers.map((driver, index) => (
+                <option key={index} value={driver}>
+                  {driver}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label>Segundo Lugar:</label>
+            <select value={second} onChange={(e) => setSecond(e.target.value)} required>
+              <option value="">Selecciona un corredor</option>
+              {drivers.map((driver, index) => (
+                <option key={index} value={driver}>
+                  {driver}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label>Tercer Lugar:</label>
+            <select value={third} onChange={(e) => setThird(e.target.value)} required>
+              <option value="">Selecciona un corredor</option>
+              {drivers.map((driver, index) => (
+                <option key={index} value={driver}>
+                  {driver}
+                </option>
+              ))}
+            </select>
+          </div>
+          <button type="submit">Guardar Predicción</button>
+        </form>
+      </div>
+
+      {/* Botón para agregar resultados (solo para admin) */}
+      {role && role === 'admin' && (
+        <button onClick={() => navigate('/add-race-result')} style={{ marginBottom: '20px' }}>
+          Agregar Resultado de Carrera
+        </button>
+      )}
+
       <button onClick={handleLogout} style={{ marginBottom: '20px' }}>
         Cerrar Sesión
       </button>
+
     </div>
 
-    
+
   );
 };
 

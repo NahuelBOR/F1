@@ -5,6 +5,7 @@ import Register from './components/Register';
 import Home from './components/Home'; // Crea este componente para la pantalla principal
 import Login from './components/Login';
 import Profile from './components/Profile';
+import AddRaceResult from './components/AddRaceResult';
 
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} /> 
         <Route path="/profile" element={<Profile />} />
+        <Route path="/add-race-result" element={<AddRaceResult />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>

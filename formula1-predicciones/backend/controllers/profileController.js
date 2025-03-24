@@ -45,6 +45,8 @@ exports.getProfile = async (req, res) => {
     res.status(200).json({
       profileImage: user.profileImage,
       displayName: user.displayName,
+      totalPoints: user.totalPoints,
+      role: user.role,
     });
   } catch (error) {
     res.status(500).json({ message: 'Error al obtener el perfil', error });

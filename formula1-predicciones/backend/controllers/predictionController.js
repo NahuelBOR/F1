@@ -1,17 +1,25 @@
-const Prediction = require('../models/Prediction');
+// backend/controllers/predictionController.js
 const User = require('../models/User');
 
-exports.createPrediction = async (req, res) => {
+exports.savePrediction = async (req, res) => {
   const { race, predictions } = req.body;
-  const user = await User.findById(req.user.id);
-  const prediction = new Prediction({ user: user._id, race, predictions });
-  await prediction.save();
-  user.predictions.push(prediction._id);
-  await user.save();
-  res.status(201).json({ message: 'Prediction created successfully' });
-};
+  const userId = req.user.id;
 
-exports.getPredictions = async (req, res) => {
-  const predictions = await Prediction.find({ user: req.user.id });
-  res.json(predictions);
+  try {
+    const user = await User.findById(userId);
+
+    // Verificar si el usuario ya hizo una predicción para esta carrera
+    const existingPrediction = user.predictions.find((p) => p.race === race);
+    if (existingPrediction) {
+      return res.status(400).json({ message: 'Ya has hecho una predicción para esta carrera' });
+    }
+
+    // Agregar la nueva predicción al array del usuario
+    user.predictions.push({ race, predictions });
+    await user.save();
+
+    res.status(201).json({ message: 'Predicción guardada exitosamente', user });
+  } catch (error) {
+    res.status(500).json({ message: 'Error al guardar la predicción', error });
+  }
 };
